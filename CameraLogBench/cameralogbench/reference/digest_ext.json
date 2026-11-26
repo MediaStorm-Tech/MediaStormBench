@@ -1,0 +1,972 @@
+{
+ "version": "v0",
+ "conventions": {
+  "linear": "relative scene-linear, 0.18 = 18% grey, 0.90 = 90% white",
+  "code": "10-bit full-range code value = normalised value * 1023",
+  "white_point": "D65 (0.3127, 0.3290) for every gamut"
+ },
+ "curves": {
+  "arri_logc3": {
+   "name": "ARRI LogC3",
+   "native_gamut": "arri_awg3",
+   "decode_gamut": "arri_awg3",
+   "formula": "y = c*log10(a*x + b) + d for x > cut, else e*x + f. EI800: cut 0.010591, a 5.555556, b 0.052272, c 0.247190, d 0.385537, e 5.367655, f 0.092809 (c falls from 0.269036 @EI160 to 0.237781 @EI1600; grey is 0.391 at every EI)",
+   "cv10": {
+    "black": 95,
+    "grey18": 400,
+    "white90": 572,
+    "clip": 976
+   },
+   "cv10_float": {
+    "black": 94.94,
+    "grey18": 400.0,
+    "white90": 572.3,
+    "clip": 975.84
+   },
+   "ei_default": 800,
+   "slope_per_stop_at_grey_cv10": 72.3,
+   "linear_at_code_1": 55.08,
+   "stops_above_grey_at_code_1": 8.26,
+   "ei_dependence": "curve",
+   "clip_note": "ARRI clipping-level table (sensor saturation, Log C value per EI: 0.8128 @EI160 ... 1.0 @EI>=1600)",
+   "levels_note": "",
+   "source": "https://www.arri.com/en/learn-help/learn-help-camera-system/technical-downloads (ALEXA Log C Curve - Usage in VFX)",
+   "doc_version": "ARRI, H. Brendel, rev. 2017-03-09",
+   "confidence": "verified"
+  },
+  "arri_logc4": {
+   "name": "ARRI LogC4",
+   "native_gamut": "arri_awg4",
+   "decode_gamut": "arri_awg4",
+   "formula": "y = ((log2(a*x + 64) - 6)/14)*b + c for x >= t, else (x - t)/s; a = (2^18 - 16)/117.45, b = 928/1023, c = 95/1023, s = 7*ln2*2^(7 - 14c/b)/(a*b), t = (2^(6 - 14c/b) - 64)/a",
+   "cv10": {
+    "black": 95,
+    "grey18": 285,
+    "white90": 428,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 95.0,
+    "grey18": 284.8,
+    "white90": 427.57,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 57.1,
+   "linear_at_code_1": 469.8,
+   "stops_above_grey_at_code_1": 11.35,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at 469.8; ALEXA 35 sensor clip moves with EI (encoding limit hit above EI3200)",
+   "levels_note": "ARRI tables give both: 10-bit full (black 95, grey 285) and 10-bit legal (145 / 308).",
+   "source": "https://www.arri.com/resource/blob/278790/bea879ac0d041a925bed27a096ab3ec2/2022-05-arri-logc4-specification-data.pdf",
+   "doc_version": "ARRI LogC4 Specification, history to 2022-11-08",
+   "confidence": "verified"
+  },
+  "sony_slog3": {
+   "name": "Sony S-Log3",
+   "native_gamut": "sony_sgamut3cine",
+   "decode_gamut": "sony_sgamut3cine",
+   "formula": "y = (420 + 261.5*log10((x + 0.01)/0.19))/1023 for x >= 0.01125, else (95 + x*(171.2102946929 - 95)/0.01125)/1023",
+   "cv10": {
+    "black": 95,
+    "grey18": 420,
+    "white90": 598,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 95.0,
+    "grey18": 420.0,
+    "white90": 597.9,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 74.5,
+   "linear_at_code_1": 38.42,
+   "stops_above_grey_at_code_1": 7.74,
+   "ei_dependence": "none",
+   "clip_note": "Sony gives no per-camera clip code; curve reaches 1.0 at 38.4",
+   "levels_note": "Native gamut can also be S-Gamut3 (same curve).",
+   "source": "https://pro.sony/s3/cms-static-content/file/12/1237494271406.pdf",
+   "doc_version": "Sony Technical Summary S-Gamut3.Cine/S-Log3 & S-Gamut3/S-Log3 (2014)",
+   "confidence": "verified"
+  },
+  "dji_dlog": {
+   "name": "DJI D-Log",
+   "native_gamut": "dji_dgamut",
+   "decode_gamut": "dji_dgamut",
+   "formula": "y = 0.256663*log10(0.9892*x + 0.0108) + 0.584555 for x > 0.0078, else 6.025*x + 0.0929",
+   "cv10": {
+    "black": 95,
+    "grey18": 408,
+    "white90": 586,
+    "clip": 948
+   },
+   "cv10_float": {
+    "black": 95.04,
+    "grey18": 407.94,
+    "white90": 586.12,
+    "clip": 948.0
+   },
+   "ei_default": 800,
+   "slope_per_stop_at_grey_cv10": 74.4,
+   "linear_at_code_1": 42.0,
+   "stops_above_grey_at_code_1": 7.87,
+   "ei_dependence": "clip_only",
+   "clip_note": "Zenmuse X9 (Ronin 4D / Inspire 3) 6K table: 948 at native EI800/5000 and above, 921 @640, 895 @500, 868 @400, 842 @320, 816 @250, 789 @200. Not documented for X7 / drones.",
+   "levels_note": "",
+   "source": "https://dl.djicdn.com/downloads/zenmuse+x7/20171010/D-Log_D-Gamut_Whitepaper.pdf ; https://dl.djicdn.com/downloads/DJI_Ronin_4D/X9_D_Log_D_Gamut_Whitepaper.pdf",
+   "doc_version": "DJI D-Log/D-Gamut whitepaper Rev1.0 2017-09-29 (X7) and Rev1.0 2022-02 (X9 6K/8K)",
+   "confidence": "verified"
+  },
+  "dji_dlogm": {
+   "name": "DJI D-Log M",
+   "native_gamut": null,
+   "decode_gamut": "rec2020",
+   "formula": "No official formula. Community fit (Mavic 3 Pro): L = 0.0558909*T(2^(7.420092*y - 0.983729) - 0.736169), T(t) = t for t >= 0.174595 else 0.438598*t + 0.098018; grey anchor (40 % -> 0.18) is the fit's assumption",
+   "cv10": {
+    "black": 3,
+    "grey18": 409,
+    "white90": 697,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 2.74,
+    "grey18": 409.2,
+    "white90": 697.27,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 112.0,
+   "linear_at_code_1": 4.8,
+   "stops_above_grey_at_code_1": 4.74,
+   "ei_dependence": "none",
+   "clip_note": "Fit reaches code 1.0 at 4.8 linear (other bodies' fits: 2.3-3.9)",
+   "levels_note": "Native gamut undocumented by DJI; rec2020 is a provisional assumption for decoding.",
+   "source": "https://github.com/thatcherfreeman/dwg-transforms (DJI Mavic 3 Pro D-Log M to DWG.dctl)",
+   "doc_version": "community empirical fit, 2024; no DJI document",
+   "confidence": "unverified"
+  },
+  "red_log3g10": {
+   "name": "RED Log3G10",
+   "native_gamut": "red_rwg",
+   "decode_gamut": "red_rwg",
+   "formula": "y = 0.224282*log10(155.975327*(x + 0.01) + 1) for x >= -0.01, else 15.1927*(x + 0.01)",
+   "cv10": {
+    "black": 94,
+    "grey18": 341,
+    "white90": 494,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 93.66,
+    "grey18": 341.0,
+    "white90": 494.48,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 63.2,
+   "linear_at_code_1": 184.32,
+   "stops_above_grey_at_code_1": 10.0,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at 184.32 (10 stops above grey); sensor clip camera/ISO dependent, undocumented",
+   "levels_note": "",
+   "source": "https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS%2C%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf",
+   "doc_version": "RED 915-0187 Rev-C, 2017-11-06",
+   "confidence": "verified"
+  },
+  "canon_clog3": {
+   "name": "Canon C-Log3",
+   "native_gamut": "canon_cinemagamut",
+   "decode_gamut": "canon_cinemagamut",
+   "formula": "r = x/0.9; y = 0.36726845*log10(14.98325*r + 1) + 0.12240537 for r > 0.014; 1.9754798*r + 0.12512219 for |r| <= 0.014; -0.36726845*log10(1 - 14.98325*r) + 0.12783901 for r < -0.014",
+   "cv10": {
+    "black": 128,
+    "grey18": 351,
+    "white90": 577,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 128.0,
+    "grey18": 351.29,
+    "white90": 577.46,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 84.6,
+   "linear_at_code_1": 14.67,
+   "stops_above_grey_at_code_1": 6.35,
+   "ei_dependence": "none",
+   "clip_note": "Sensor saturation = 1600 % (r = 16) -> code 0.997 (~1020) on C300 Mk II at base ISO",
+   "levels_note": "Canon records Canon Log full range (FAQ Q6/Q7).",
+   "source": "https://www.usa.canon.com/content/dam/canon-assets/white-papers/pro/white-paper-canon-log-gamma-curves.pdf ; http://downloads.canon.com/nw/learn/white-papers/cinema-eos/White_Paper_Deep-Dive-HDR-Part2.pdf",
+   "doc_version": "Canon USA white paper 2018-11-01 (+ HDR Deep Dive Part 2, 2017)",
+   "confidence": "verified_secondary"
+  },
+  "bmd_film_gen5": {
+   "name": "Blackmagic Film Gen 5",
+   "native_gamut": "bmd_wg_gen5",
+   "decode_gamut": "bmd_wg_gen5",
+   "formula": "y = 0.08692876*ln(x + 0.00549407) + 0.53001334 for x >= 0.005, else 8.28360593*x + 0.09246575",
+   "cv10": {
+    "black": 95,
+    "grey18": 392,
+    "white90": 533,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 94.59,
+    "grey18": 392.38,
+    "white90": 533.38,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 59.8,
+   "linear_at_code_1": 222.86,
+   "stops_above_grey_at_code_1": 10.27,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at 222.86 (10.27 stops above grey)",
+   "levels_note": "BMD camera ProRes stores video levels 64 + 876*y: black 145, grey 400, 1.0 -> 940. RAW decoded in Resolve yields y directly (black 95, grey 392).",
+   "source": "Blackmagic RAW SDK: 'Blackmagic Generation 5 Color Science Technical Reference.pdf' (mirror: https://www.repaire.net/forums/attachments/blackmagic-generation-5-color-science-technical-reference-pdf.51283/)",
+   "doc_version": "Blackmagic Design technical reference, May 2021",
+   "confidence": "verified"
+  },
+  "apple_log": {
+   "name": "Apple Log",
+   "native_gamut": "rec2020",
+   "decode_gamut": "rec2020",
+   "formula": "y = 0.08550479*log2(x + 0.00964052) + 0.69336945 for x >= 0.01; 47.28711236*(x + 0.05641088)^2 for -0.05641088 <= x < 0.01; 0 below",
+   "cv10": {
+    "black": 154,
+    "grey18": 500,
+    "white90": 697,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 153.94,
+    "grey18": 499.5,
+    "white90": 697.37,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 82.9,
+   "linear_at_code_1": 12.0,
+   "stops_above_grey_at_code_1": 6.06,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at ~12.0 linear",
+   "levels_note": "",
+   "source": "https://developer.apple.com/download/all/?q=Apple%20Log%20profile (login) ; https://antlerpost.com/colour-spaces/AppleLog.html",
+   "doc_version": "Apple Log Profile White Paper, Sept 2023 (via transcription)",
+   "confidence": "verified_secondary"
+  },
+  "fuji_flog2": {
+   "name": "Fujifilm F-Log2",
+   "native_gamut": "fuji_fgamut",
+   "decode_gamut": "fuji_fgamut",
+   "formula": "y = 0.245281*log10(5.555556*x + 0.064829) + 0.384316 for x >= 0.000889, else 8.799461*x + 0.092864",
+   "cv10": {
+    "black": 95,
+    "grey18": 400,
+    "white90": 570,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 95.0,
+    "grey18": 400.0,
+    "white90": 569.95,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 70.9,
+   "linear_at_code_1": 58.25,
+   "stops_above_grey_at_code_1": 8.34,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at 58.2; camera clip undocumented",
+   "levels_note": "",
+   "source": "https://dl.fujifilm-x.com/support/lut/F-Log2_DataSheet_E_Ver.1.0.pdf",
+   "doc_version": "Fujifilm F-Log2 Data Sheet Ver.1.0",
+   "confidence": "verified"
+  },
+  "nikon_nlog": {
+   "name": "Nikon N-Log",
+   "native_gamut": "rec2020",
+   "decode_gamut": "rec2020",
+   "formula": "code10 = 650*(x + 0.0075)^(1/3) for x < 0.328, else 150*ln(x) + 619 (y = code10/1023)",
+   "cv10": {
+    "black": 127,
+    "grey18": 372,
+    "white90": 603,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 127.23,
+    "grey18": 372.03,
+    "white90": 603.2,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 82.7,
+   "linear_at_code_1": 14.78,
+   "stops_above_grey_at_code_1": 6.36,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at 14.8 linear; camera clip undocumented",
+   "levels_note": "",
+   "source": "https://download.nikonimglib.com/archive3/hDCmK00m9JDI03RPruD74xpoU905/N-Log_Specification_(En)01.pdf",
+   "doc_version": "Nikon N-Log Specification Document v1.0.0, 2018-09-01",
+   "confidence": "verified"
+  },
+  "kine_log3": {
+   "name": "Kinefinity KineLOG3",
+   "native_gamut": "kinefinity_kwg",
+   "decode_gamut": "kinefinity_kwg",
+   "formula": "y = 0.268512*log10(66.64*x + 1) + 0.092864 for x >= -0.008239 (b*c = 0.296*0.907136), else (x + 0.008239)/0.017178",
+   "cv10": {
+    "black": 95,
+    "grey18": 401,
+    "white90": 585,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 95.0,
+    "grey18": 400.94,
+    "white90": 585.36,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 76.2,
+   "linear_at_code_1": 35.85,
+   "stops_above_grey_at_code_1": 7.64,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at about 36 linear; camera clip undocumented",
+   "levels_note": "",
+   "source": "https://kinefinity.com/support/guides/kinelog3-technical-specifications",
+   "doc_version": "Kinefinity KineLog3 Technical Specifications, 2025-09-24",
+   "confidence": "verified"
+  },
+  "canon_clog2": {
+   "name": "Canon C-Log2",
+   "native_gamut": "canon_cinemagamut",
+   "decode_gamut": "canon_cinemagamut",
+   "formula": "r = x/0.9; y = 0.24136077*log10(87.09937546*r + 1) + 0.092864125 for r >= 0; -0.24136077*log10(1 - 87.09937546*r) + 0.092864125 for r < 0",
+   "cv10": {
+    "black": 95,
+    "grey18": 407,
+    "white90": 575,
+    "clip": 1023
+   },
+   "cv10_float": {
+    "black": 95.0,
+    "grey18": 407.41,
+    "white90": 575.24,
+    "clip": 1023.0
+   },
+   "ei_default": null,
+   "slope_per_stop_at_grey_cv10": 70.2,
+   "linear_at_code_1": 59.23,
+   "stops_above_grey_at_code_1": 8.36,
+   "ei_dependence": "none",
+   "clip_note": "Curve reaches 1.0 at r = 65.8 (about 8.4 stops above grey); sensor clip camera/ISO dependent",
+   "levels_note": "Same code-value convention as Canon Log 3.",
+   "source": "Canon Input Transform Version 202007 for EOS C300 Mark II (constants via colour-science canon.py v1.2)",
+   "doc_version": "Canon Input Transform 202007 (2020)",
+   "confidence": "verified_secondary"
+  }
+ },
+ "gamuts": {
+  "arri_awg3": {
+   "name": "ALEXA Wide Gamut (AWG3)",
+   "R": [
+    0.684,
+    0.313
+   ],
+   "G": [
+    0.221,
+    0.848
+   ],
+   "B": [
+    0.0861,
+    -0.102
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.638008,
+     0.214704,
+     0.097744
+    ],
+    [
+     0.291954,
+     0.823841,
+     -0.115795
+    ],
+    [
+     0.002798,
+     -0.067034,
+     1.153294
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "arri_awg4": {
+   "name": "ALEXA Wide Gamut 4 (AWG4)",
+   "R": [
+    0.7347,
+    0.2653
+   ],
+   "G": [
+    0.1424,
+    0.8576
+   ],
+   "B": [
+    0.0991,
+    -0.0308
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.704858,
+     0.12976,
+     0.115837
+    ],
+    [
+     0.254524,
+     0.781478,
+     -0.036002
+    ],
+    [
+     0.0,
+     0.0,
+     1.089058
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "sony_sgamut3cine": {
+   "name": "S-Gamut3.Cine",
+   "R": [
+    0.766,
+    0.275
+   ],
+   "G": [
+    0.225,
+    0.8
+   ],
+   "B": [
+    0.089,
+    -0.087
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.599084,
+     0.248926,
+     0.102446
+    ],
+    [
+     0.215076,
+     0.885069,
+     -0.100144
+    ],
+    [
+     -0.032066,
+     -0.027658,
+     1.148782
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "sony_sgamut3": {
+   "name": "S-Gamut3",
+   "R": [
+    0.73,
+    0.28
+   ],
+   "G": [
+    0.14,
+    0.855
+   ],
+   "B": [
+    0.1,
+    -0.05
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.706483,
+     0.128801,
+     0.115172
+    ],
+    [
+     0.27098,
+     0.786606,
+     -0.057586
+    ],
+    [
+     -0.009678,
+     0.0046,
+     1.094136
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "dji_dgamut": {
+   "name": "D-Gamut",
+   "R": [
+    0.71,
+    0.31
+   ],
+   "G": [
+    0.21,
+    0.88
+   ],
+   "B": [
+    0.09,
+    -0.08
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.648172,
+     0.194058,
+     0.108226
+    ],
+    [
+     0.283005,
+     0.813196,
+     -0.096201
+    ],
+    [
+     -0.018258,
+     -0.083168,
+     1.190484
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "red_rwg": {
+   "name": "REDWideGamutRGB",
+   "R": [
+    0.780308,
+    0.304253
+   ],
+   "G": [
+    0.121595,
+    1.493994
+   ],
+   "B": [
+    0.095612,
+    -0.084589
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.735275,
+     0.068609,
+     0.146571
+    ],
+    [
+     0.286694,
+     0.842979,
+     -0.129673
+    ],
+    [
+     -0.079681,
+     -0.347343,
+     1.516082
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "canon_cinemagamut": {
+   "name": "Cinema Gamut",
+   "R": [
+    0.74,
+    0.27
+   ],
+   "G": [
+    0.17,
+    1.14
+   ],
+   "B": [
+    0.08,
+    -0.1
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.71605,
+     0.129683,
+     0.104723
+    ],
+    [
+     0.261261,
+     0.869642,
+     -0.130904
+    ],
+    [
+     -0.009676,
+     -0.236482,
+     1.335216
+    ]
+   ],
+   "confidence": "verified_secondary"
+  },
+  "bmd_wg_gen5": {
+   "name": "Blackmagic Wide Gamut Gen 5",
+   "R": [
+    0.7177215,
+    0.3171181
+   ],
+   "G": [
+    0.228041,
+    0.861569
+   ],
+   "B": [
+    0.1005841,
+    -0.0820452
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.606538,
+     0.220413,
+     0.123505
+    ],
+    [
+     0.267993,
+     0.832748,
+     -0.100741
+    ],
+    [
+     -0.029443,
+     -0.086612,
+     1.205113
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "bmd_wg_gen4": {
+   "name": "Blackmagic Wide Gamut Gen 4",
+   "R": [
+    0.7177215,
+    0.3171181
+   ],
+   "G": [
+    0.228041,
+    0.861569
+   ],
+   "B": [
+    0.1005841,
+    -0.0820452
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.606538,
+     0.220413,
+     0.123505
+    ],
+    [
+     0.267993,
+     0.832748,
+     -0.100741
+    ],
+    [
+     -0.029443,
+     -0.086612,
+     1.205113
+    ]
+   ],
+   "confidence": "unverified"
+  },
+  "panasonic_vgamut": {
+   "name": "V-Gamut",
+   "R": [
+    0.73,
+    0.28
+   ],
+   "G": [
+    0.165,
+    0.84
+   ],
+   "B": [
+    0.1,
+    -0.03
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.679644,
+     0.152211,
+     0.1186
+    ],
+    [
+     0.260686,
+     0.774894,
+     -0.03558
+    ],
+    [
+     -0.00931,
+     -0.004612,
+     1.10298
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "fuji_fgamut": {
+   "name": "F-Gamut (Rec.2020 primaries)",
+   "R": [
+    0.708,
+    0.292
+   ],
+   "G": [
+    0.17,
+    0.797
+   ],
+   "B": [
+    0.131,
+    0.046
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.636958,
+     0.144617,
+     0.168881
+    ],
+    [
+     0.2627,
+     0.677998,
+     0.059302
+    ],
+    [
+     0.0,
+     0.028073,
+     1.060985
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "rec2020": {
+   "name": "Rec.2020",
+   "R": [
+    0.708,
+    0.292
+   ],
+   "G": [
+    0.17,
+    0.797
+   ],
+   "B": [
+    0.131,
+    0.046
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.636958,
+     0.144617,
+     0.168881
+    ],
+    [
+     0.2627,
+     0.677998,
+     0.059302
+    ],
+    [
+     0.0,
+     0.028073,
+     1.060985
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "rec709": {
+   "name": "Rec.709 / sRGB",
+   "R": [
+    0.64,
+    0.33
+   ],
+   "G": [
+    0.3,
+    0.6
+   ],
+   "B": [
+    0.15,
+    0.06
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.412391,
+     0.357584,
+     0.180481
+    ],
+    [
+     0.212639,
+     0.715169,
+     0.072192
+    ],
+    [
+     0.019331,
+     0.119195,
+     0.950532
+    ]
+   ],
+   "confidence": "verified"
+  },
+  "kinefinity_kwg": {
+   "name": "Kinefinity Wide Gamut",
+   "R": [
+    0.7571,
+    0.2282
+   ],
+   "G": [
+    0.2139,
+    1.148
+   ],
+   "B": [
+    0.0536,
+    -0.2236
+   ],
+   "W": [
+    0.3127,
+    0.329
+   ],
+   "rgb_to_xyz": [
+    [
+     0.687917,
+     0.197918,
+     0.064621
+    ],
+    [
+     0.207347,
+     1.062227,
+     -0.269574
+    ],
+    [
+     0.013357,
+     -0.33486,
+     1.410561
+    ]
+   ],
+   "confidence": "verified"
+  }
+ },
+ "logc3_by_ei": {
+  "160": {
+   "clip_cv10": 831,
+   "white90_cv10": 585,
+   "slope_per_stop": 76.6
+  },
+  "200": {
+   "clip_cv10": 853,
+   "white90_cv10": 583,
+   "slope_per_stop": 76.0
+  },
+  "250": {
+   "clip_cv10": 875,
+   "white90_cv10": 582,
+   "slope_per_stop": 75.4
+  },
+  "320": {
+   "clip_cv10": 897,
+   "white90_cv10": 580,
+   "slope_per_stop": 74.7
+  },
+  "400": {
+   "clip_cv10": 917,
+   "white90_cv10": 578,
+   "slope_per_stop": 74.1
+  },
+  "500": {
+   "clip_cv10": 937,
+   "white90_cv10": 576,
+   "slope_per_stop": 73.5
+  },
+  "640": {
+   "clip_cv10": 958,
+   "white90_cv10": 574,
+   "slope_per_stop": 72.9
+  },
+  "800": {
+   "clip_cv10": 976,
+   "white90_cv10": 572,
+   "slope_per_stop": 72.3
+  },
+  "1000": {
+   "clip_cv10": 993,
+   "white90_cv10": 571,
+   "slope_per_stop": 71.7
+  },
+  "1280": {
+   "clip_cv10": 1012,
+   "white90_cv10": 569,
+   "slope_per_stop": 71.0
+  },
+  "1600": {
+   "clip_cv10": 1023,
+   "white90_cv10": 567,
+   "slope_per_stop": 70.5
+  }
+ },
+ "dlog_x9_clip_by_ei": {
+  "200": 789,
+  "250": 816,
+  "320": 842,
+  "400": 868,
+  "500": 895,
+  "640": 921,
+  "800": 948,
+  "1000": 948,
+  "1250": 948,
+  "1600": 948,
+  "2000": 948,
+  "2500": 948,
+  "3200": 948,
+  "4000": 921,
+  "5000": 948,
+  "6400": 948,
+  "8000": 948,
+  "10000": 948,
+  "12800": 948
+ }
+}
